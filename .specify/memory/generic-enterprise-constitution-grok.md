@@ -105,7 +105,7 @@ Code MUST be clean, readable, and self-documenting with consistent style enforce
 - All I/O operations MUST be asynchronous with cancellation support
 - Use dependency injection for loose coupling
 - Implement centralized error handling with meaningful responses
-- All public classes and public methods MUST be well-documented
+- All public APIs, classes, and methods MUST be well-documented
 
 **Rationale**: High-quality code reduces bugs, accelerates onboarding, and enables sustainable development velocity. Automated enforcement ensures consistency across teams.
 
