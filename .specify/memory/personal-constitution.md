@@ -4,9 +4,9 @@ A set of guiding principles for my personal projects. The goal is to build thing
 
 ## Core Principles
 
-### 1. Think First, Code Second
+### 1. The Spec is the Source of Truth
 
-Before writing any code, take a moment to define what I'm building and why. A simple list of features or user stories is enough to provide clarity and direction, preventing wasted effort.
+Ensure that the implementation faithfully follows the specification (spec.md). All new ideas, changes, and refactoring must start with an update to the spec, not the code. Follow that with an update to the plan and the tasks, then implement the code. This keeps the code and its intent synchronized.
 
 ### 2. Keep It Simple (YAGNI)
 
@@ -26,6 +26,7 @@ Structure code in small, independent, and loosely-coupled pieces. Whether it's f
 
 - **Readable & Consistent:** Write code for a human to read. Use clear names and a consistent style, enforced by an automated formatter or linter.
 - **Handle Errors:** Don't let errors fail silently. Handle them gracefully to create a more robust application.
+- **.getignore:** Always ensure that you have a .gitignore file that is approprite for the  implementation tech stack. Keep it updated to exclude unwanted files and directories from version control.
 
 ### Smart Data Management
 
