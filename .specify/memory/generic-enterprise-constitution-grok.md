@@ -4,13 +4,13 @@ Sync Impact Report
 Version change: none → 1.0.0
 Type: Initial creation (MINOR - new governance document)
 Rationale: First formal constitution for enterprise development projects based on existing
-generic-enterprise-constitution.md principles plus additional enterprise-focused guidance.
+generic-enterprise-constitution.md principles plus additional enterprise-focused principles.
 
 Added sections:
-- All core principles (10 principles total)
+- All core principles (10 principles total, expanded beyond template)
 - Enterprise development workflow guidelines
 - Quality gates and compliance section
-- Governance rules with formal exception handling
+- Governance rules
 
 Templates requiring updates:
 - ✅ plan-template.md (Constitution Check section already present)
@@ -23,8 +23,6 @@ Follow-up TODOs: None
 
 # Enterprise Development Constitution
 
-This Constitution establishes the immutable principles and best practices for all software development. It serves as the supreme governing document, ensuring that all specifications, plans, and implementations adhere to a common standard of quality, security, and maintainability. This document is the ultimate source of truth, and all AI-driven and human-led development must comply with its articles.
-
 ## Core Principles
 
 ### I. Specification-First (The Source of Truth)
@@ -33,26 +31,26 @@ All development work begins with a specification. The specification is an execut
 
 **Rules**:
 
-- All development MUST begin with a specification
+- Specifications MUST be written before any implementation
 - Specifications MUST define requirements, not implementation details
-- Code changes MUST trace back to specification updates
-- Specifications serve as the single source of truth for system behavior
+- All code changes MUST trace back to specification updates
+- Specifications serve as the single source of truth for what the system does
 
-**Rationale**: Starting with specifications ensures clarity of purpose, prevents implementation drift, and creates a foundation for automated testing, documentation, and consistent development across teams.
+**Rationale**: Starting with specifications ensures clarity of purpose and prevents implementation drift. This creates a foundation for automated testing, documentation, and consistent development across teams.
 
 ### II. Test-First (Non-Negotiable)
 
-All implementation MUST follow a strict Test-Driven Development (TDD) workflow. No implementation code shall be written before contracts are defined and tests are written and approved.
+All implementation MUST follow a strict Test-Driven Development (TDD) workflow. No implementation code shall be written before contracts are defined and tests that validate these contracts are written and approved.
 
 **Rules**:
 
 - Contracts (API specifications, data models) MUST be defined first
 - Tests MUST be written and approved before implementation begins
 - Tests MUST fail (Red phase) before implementation code is written
-- Implementation code is written to make tests pass (Green phase)
+- Implementation code is then written to make the tests pass (Green phase)
 - Refactoring occurs only after tests pass
 
-**Rationale**: TDD ensures code quality, prevents regressions, creates living documentation of expected behavior, catches issues early, and enables fearless refactoring.
+**Rationale**: TDD ensures code quality, prevents regressions, and creates living documentation of expected behavior. This approach catches issues early and enables fearless refactoring.
 
 ### III. Simplicity and YAGNI (You Ain't Gonna Need It)
 
@@ -75,25 +73,24 @@ All services MUST expose their functionality through well-defined, contract-firs
 **Rules**:
 
 - APIs MUST be designed before implementation begins
-- Use contract-first specifications (OpenAPI for REST, gRPC for RPC)
+- Use contract-first specifications (OpenAPI, gRPC, etc.)
 - Contracts MUST be used to generate client code and tests
 - API changes MUST maintain backward compatibility
 - Documentation MUST be generated from contracts
 
-**Rationale**: API-first design ensures consistent interfaces, enables parallel development of clients and servers, provides clear contracts for testing and documentation, and prevents integration issues.
+**Rationale**: API-first design ensures consistent interfaces, enables parallel development of clients and servers, and provides clear contracts for testing and documentation.
 
 ### V. Observability by Design
 
-Systems must be designed to be observable from the outset. This includes structured logging, metrics, and distributed tracing. Observability is not an afterthought.
+Systems must be designed to be observable from the outset. This includes structured logging, metrics, and distributed tracing.
 
 **Rules**:
 
 - All logs MUST be structured (JSON format) with correlation IDs
-- Correlation IDs MUST track requests across all services
 - Services MUST expose key metrics (latency, error rate, throughput)
-- Use standardized metrics format (Prometheus)
 - Distributed tracing MUST be implemented for request tracking
 - Health check endpoints MUST be provided
+- Monitoring is built-in, not added as an afterthought
 
 **Rationale**: Observability enables effective debugging, performance monitoring, and incident response. Building it in from the start ensures systems can be properly monitored in production.
 
@@ -106,11 +103,9 @@ Code MUST be clean, readable, and self-documenting with consistent style enforce
 - Target recent, stable LTS versions of languages and frameworks
 - Enforce consistent style using automated linters and formatters
 - All I/O operations MUST be asynchronous with cancellation support
-- Use dependency injection for loose coupling (constructor injection)
-- Avoid static accessors and Service Locator pattern
+- Use dependency injection for loose coupling
 - Implement centralized error handling with meaningful responses
-- Errors MUST NOT be silently ignored
-- All public APIs, classes, and methods MUST be well-documented
+- All public classes and public methods MUST be well-documented
 
 **Rationale**: High-quality code reduces bugs, accelerates onboarding, and enables sustainable development velocity. Automated enforcement ensures consistency across teams.
 
@@ -124,11 +119,10 @@ Database schema changes MUST be managed through code-first migrations with type-
 - All migrations MUST be reversible
 - Use ORMs or type-safe query builders instead of raw SQL
 - Prevent N+1 query problems with explicit loading strategies
-- All data access methods MUST be asynchronous
-- Wrap multi-write operations in explicit transactions
+- Wrap multi-write operations in transactions
 - Index foreign keys and frequently queried columns
 
-**Rationale**: Proper data management prevents corruption, ensures consistency, and enables reliable deployments. Type safety reduces runtime errors. Migrations enable rollback capabilities.
+**Rationale**: Proper data management prevents corruption, ensures consistency, and enables reliable deployments. Type safety reduces runtime errors.
 
 ### VIII. Code Structure and Design
 
@@ -136,11 +130,10 @@ Follow SOLID principles with composition over inheritance and focused, cohesive 
 
 **Rules**:
 
-- Single Responsibility: Each class/method/module MUST have one reason to change
-- Open/Closed: Open for extension, closed for modification
-- Interface Segregation: Prefer small, role-specific interfaces
-- Dependency Inversion: Depend on abstractions, not concrete implementations
-- Composition Over Inheritance: Use inheritance only for true "is-a" relationships
+- Each class/method/module MUST have single responsibility
+- Prefer composition over inheritance
+- Use small, role-specific interfaces
+- Depend on abstractions, not concrete implementations
 - Services MUST be small, focused, and cohesive
 
 **Rationale**: SOLID principles create maintainable, testable, and extensible code. Proper structure enables independent development and deployment of components.
@@ -152,32 +145,28 @@ Design stateless, configurable services that run in containers with proper healt
 **Rules**:
 
 - Services MUST be stateless with externalized state
-- Configuration MUST be externalized from code (env vars, ConfigMaps)
+- Configuration MUST be externalized from code
 - Secrets MUST be injected at runtime from secure stores
-- Secrets MUST NOT be stored in source code or config files
 - All applications MUST be containerized as Docker images
-- Container images MUST be minimal, secure, and run as non-root
-- Health check endpoints MUST be exposed (`/health/live`, `/health/ready`)
+- Health check endpoints MUST be exposed for orchestration
 
 **Rationale**: Cloud-native architecture enables scalability, reliability, and automated deployment. Containerization ensures consistent environments across development and production.
 
 ### X. Proactive Security and Developer Enablement
 
-Implement security by design with least privilege and comprehensive input validation. Enable developers with simplified local auth that still tests authorization logic.
+Implement security by design with least privilege and comprehensive input validation.
 
 **Rules**:
 
-- Apply principle of least privilege to all identities (zero trust)
-- Use strong, centralized authentication in production (OIDC)
-- Authorization is NOT optional - all protected endpoints MUST enforce policies
-- For local development: Use simplified auth handler (Development env only)
-- Simplified handler bypasses external identity providers, simulates authenticated users
-- Local auth uses claims from config files (`.env.local`, `appsettings.Development.json`)
-- Encrypt data in transit (TLS 1.2+) and sensitive data at rest
-- Validate and sanitize ALL external input on arrival
-- Scan dependencies regularly for vulnerabilities (Dependabot, Snyk)
+- Apply principle of least privilege to all identities
+- Use strong, centralized authentication in production
+- Implement authorization on all protected endpoints
+- Encrypt data in transit and at rest
+- Validate and sanitize all external input
+- Scan dependencies for vulnerabilities regularly
+- Use simplified auth for local development while testing authorization logic
 
-**Rationale**: Security built-in from the start prevents vulnerabilities and compliance issues. Simplified dev auth enables testing authorization logic without production auth friction, accelerating development while maintaining security rigor.
+**Rationale**: Security built-in from the start prevents vulnerabilities and compliance issues. Proper security enables safe, rapid development without compromising production safety.
 
 ## Enterprise Development Workflow
 
@@ -188,7 +177,6 @@ Implement security by design with least privilege and comprehensive input valida
 3. Use `/speckit.clarify` to resolve underspecified requirements BEFORE planning
 4. Validate acceptance criteria are testable and complete
 5. Define API contracts and data models
-6. Review for compliance with all 10 core principles
 
 ### Planning Phase
 
@@ -196,8 +184,7 @@ Implement security by design with least privilege and comprehensive input valida
 2. Ensure Technical Context section has NO "NEEDS CLARIFICATION" markers
 3. Complete Constitution Check and document any required complexity justifications
 4. Design APIs and contracts before implementation begins
-5. Plan observability strategy (logging, metrics, tracing)
-6. Have agent validate the plan for completeness before proceeding
+5. Have agent validate the plan for completeness before proceeding
 
 ### Task Phase
 
@@ -206,17 +193,15 @@ Implement security by design with least privilege and comprehensive input valida
 3. Verify foundational tasks are identified and will block story work appropriately
 4. Confirm parallel execution markers `[P]` are used where dependencies allow
 5. Include contract and API testing tasks
-6. Include observability implementation tasks
 
 ### Implementation Phase
 
 1. Use `/speckit.implement` to execute tasks in dependency order
 2. Write tests FIRST (contracts, then implementation tests)
-3. Verify tests FAIL before writing implementation code
-4. Implement APIs and contracts before business logic
-5. Commit after each task or logical group of tasks
-6. Validate at checkpoints that user stories work independently
-7. Stop and validate at any story boundary before proceeding to next priority
+3. Implement APIs and contracts before business logic
+4. Commit after each task or logical group of tasks
+5. Validate at checkpoints that user stories work independently
+6. Stop and validate at any story boundary before proceeding to next priority
 
 ### Quality Phase
 
@@ -226,7 +211,6 @@ Implement security by design with least privilege and comprehensive input valida
 4. Validate against constitution principles (especially I-X)
 5. Test the quickstart.md instructions to ensure reproducibility
 6. Perform security scanning and dependency checks
-7. Verify observability (logs, metrics, traces) are functional
 
 ## Quality Gates and Compliance
 
@@ -238,7 +222,6 @@ Implement security by design with least privilege and comprehensive input valida
 - [ ] Success criteria are measurable
 - [ ] Edge cases are identified
 - [ ] NO "NEEDS CLARIFICATION" markers remain
-- [ ] Security requirements are documented
 
 ### Gate 2: Plan Validated
 
@@ -247,7 +230,6 @@ Implement security by design with least privilege and comprehensive input valida
 - [ ] Project structure is documented and appropriate
 - [ ] Dependencies and versions are specified
 - [ ] Security and compliance requirements are addressed
-- [ ] Observability strategy is defined
 - [ ] Agent has validated plan completeness
 
 ### Gate 3: Implementation Complete
@@ -258,24 +240,18 @@ Implement security by design with least privilege and comprehensive input valida
 - [ ] No silent error handling or unhandled exceptions
 - [ ] Code follows SOLID principles and quality standards
 - [ ] APIs match defined contracts
-- [ ] Observability is functional (logs, metrics, traces)
 
 ### Gate 4: Production Ready
 
 - [ ] All acceptance criteria met
-- [ ] Security scanning passes (no high/critical vulnerabilities)
+- [ ] Security scanning passes
 - [ ] Performance requirements validated
 - [ ] Documentation updated (README, API docs, comments)
 - [ ] Health checks and monitoring configured
 - [ ] Container images built and tested
 - [ ] Deployment manifests validated
-- [ ] Secrets properly externalized
 
 ## Governance
-
-### Compliance Authority
-
-This Constitution is the highest authority on development practices and supersedes all other guidelines. Compliance with this Constitution will be automatically verified during specification, planning, and implementation phases.
 
 ### Amendment Procedure
 
@@ -283,8 +259,7 @@ This Constitution is the highest authority on development practices and supersed
 2. Document rationale and impact on existing projects
 3. Update constitution with versioning (see below)
 4. Update template files (plan, spec, tasks, commands) to align
-5. Review and approval by project maintainers
-6. Commit with message: `docs: amend constitution to vX.Y.Z (description)`
+5. Commit with message: `docs: amend constitution to vX.Y.Z (description)`
 
 ### Versioning Policy
 
@@ -294,15 +269,6 @@ Constitution version follows semantic versioning:
 - **MINOR**: New principle added or material expansion of guidance
 - **PATCH**: Clarifications, wording improvements, typo fixes
 
-### Exception Handling
-
-Any deviation from these articles requires a formal, documented exception:
-
-- Exception MUST be reviewed and approved by project maintainers
-- Justification MUST be recorded in `research.md` for the relevant specification
-- Exception MUST include: reason, alternative approach, risk mitigation
-- Temporary exceptions MUST have resolution timeline
-
 ### Compliance Review
 
 - All specifications MUST reference this constitution
@@ -310,7 +276,6 @@ Any deviation from these articles requires a formal, documented exception:
 - Agents MUST verify compliance before implementation
 - Violations MUST be documented and justified in Complexity Tracking
 - Security and compliance requirements MUST be explicitly addressed
-- Regular audits to ensure ongoing compliance
 
 ### Runtime Guidance
 
@@ -321,6 +286,5 @@ During active development, agents SHOULD reference:
 - `spec.md` for requirements and acceptance criteria
 - `tasks.md` for execution sequence and dependencies
 - API contracts for interface definitions
-- `research.md` for documented exceptions and justifications
 
 **Version**: 1.0.0 | **Ratified**: 2025-10-25 | **Last Amended**: 2025-10-25
